@@ -224,6 +224,83 @@
             100% { border-color: rgba(11, 45, 109, 0.25); box-shadow: 0 8px 32px rgba(11, 45, 109, 0.25); }
         }
 
+        /* Reglas de la Polla */
+        .rules-section {
+            width: 100%;
+            max-width: 800px;
+            margin: 15px auto 25px auto;
+            padding: 0 20px;
+            box-sizing: border-box;
+        }
+
+        .rules-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px rgba(11, 45, 109, 0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .rules-toggle-btn {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 15px 20px;
+            font-family: var(--font-title);
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--color-biass-blue);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            text-align: left;
+        }
+
+        .rules-toggle-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .rules-content {
+            padding: 0 20px 20px 20px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: rgba(11, 45, 109, 0.9);
+            border-top: 1px solid rgba(11, 45, 109, 0.05);
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .rules-content p {
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .rules-list {
+            margin: 0;
+            padding-left: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .rules-list li {
+            margin-bottom: 4px;
+        }
+
+        .rules-list strong {
+            color: var(--color-biass-blue);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         h1 {
             font-family: var(--font-title);
             font-size: 2.2rem;
@@ -1131,6 +1208,25 @@
             <div class="mascot-card">
                 <div class="mascot-badge usa">🇺🇸 Clutch</div>
                 <p>Un águila calva llena de optimismo y pasión. Centrocampista táctico que representa el espíritu de aventura de EE.UU.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reglas de la Polla -->
+    <section class="rules-section">
+        <div class="rules-container">
+            <button class="rules-toggle-btn" onclick="toggleRules()">
+                <span>📋 Reglas y Sistema de Puntuación</span>
+                <span id="rules-arrow">▼</span>
+            </button>
+            <div class="rules-content" id="rules-content" style="display: none;">
+                <p>Tus predicciones se guardan automáticamente en este navegador y se envían al organizador. Los puntos se calculan así:</p>
+                <ul class="rules-list">
+                    <li><strong>🎯 Marcador Exacto (3 Puntos):</strong> Si aciertas los goles exactos de ambos equipos (ej. pronóstico: 2-1, resultado real: 2-1).</li>
+                    <li><strong>⚽ Ganador o Empate (1 Punto):</strong> Si aciertas qué equipo gana o si el partido empata, pero con goles diferentes (ej. pronóstico: 2-1, resultado real: 1-0).</li>
+                    <li><strong>⚖️ Clasificado de Llave (1 Punto adicional):</strong> En partidos de eliminación directa (Fases Finales), si el equipo que marcaste como ganador clasifica a la siguiente ronda (incluso por prórroga o penales).</li>
+                    <li><strong>🔒 Bloqueo de Predicciones:</strong> Las celdas de un partido se bloquean automáticamente 1 minuto antes de su hora de inicio oficial. ¡Asegúrate de guardar tus cambios antes!</li>
+                </ul>
             </div>
         </div>
     </section>
@@ -2071,6 +2167,19 @@
 
             updateTimer();
             const timerInterval = setInterval(updateTimer, 1000);
+        }
+
+        // Alternar visualización de las reglas de la polla
+        function toggleRules() {
+            const content = document.getElementById('rules-content');
+            const arrow = document.getElementById('rules-arrow');
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                arrow.innerText = '▲';
+            } else {
+                content.style.display = 'none';
+                arrow.innerText = '▼';
+            }
         }
 
         // Carga inicial
