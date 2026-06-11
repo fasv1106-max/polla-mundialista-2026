@@ -119,7 +119,112 @@
             max-height: 46px;
             width: auto;
             object-fit: contain;
-        }        h1 {
+        }
+
+        /* Temporizador Mundialista */
+        .countdown-container {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            border-radius: 20px;
+            padding: 15px 25px;
+            margin: 20px auto;
+            max-width: 450px;
+            width: calc(100% - 40px);
+            box-shadow: 0 8px 32px rgba(11, 45, 109, 0.15);
+            text-align: center;
+            color: var(--color-biass-blue);
+            transition: all 0.3s ease;
+            animation: pulse-border 3s infinite alternate;
+        }
+
+        .countdown-container:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(11, 45, 109, 0.25);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .countdown-title {
+            font-family: var(--font-title);
+            font-size: 0.95rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: var(--color-biass-blue);
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+        }
+
+        .soccer-icon {
+            display: inline-block;
+            font-size: 1.2rem;
+            animation: spin-soccer 4s linear infinite;
+        }
+
+        .countdown-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+
+        .countdown-item {
+            background: rgba(11, 45, 109, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            padding: 8px 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .countdown-number {
+            font-family: var(--font-title);
+            font-size: 1.8rem;
+            font-weight: 800;
+            line-height: 1.1;
+            color: var(--color-biass-blue);
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+            background: linear-gradient(135deg, var(--color-biass-blue), var(--color-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .countdown-label {
+            font-size: 0.65rem;
+            font-weight: 700;
+            color: rgba(11, 45, 109, 0.7);
+            letter-spacing: 1px;
+            margin-top: 4px;
+            text-transform: uppercase;
+        }
+
+        .countdown-footer {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(11, 45, 109, 0.85);
+            margin-top: 8px;
+            border-top: 1px solid rgba(11, 45, 109, 0.1);
+            padding-top: 8px;
+        }
+
+        @keyframes spin-soccer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse-border {
+            0% { border-color: rgba(255, 255, 255, 0.25); box-shadow: 0 8px 32px rgba(11, 45, 109, 0.15); }
+            100% { border-color: rgba(11, 45, 109, 0.25); box-shadow: 0 8px 32px rgba(11, 45, 109, 0.25); }
+        }
+
+        h1 {
             font-family: var(--font-title);
             font-size: 2.2rem;
             font-weight: 800;
@@ -972,6 +1077,34 @@
         </div>
         <h1>Polla mundialista BIASS 2026</h1>
         <div class="subtitle">FIFA WORLD CUP 2026</div>
+
+        <!-- Temporizador Temático del Mundial -->
+        <div class="countdown-container" id="countdown-timer">
+            <div class="countdown-title" id="countdown-timer-title">
+                <span class="soccer-icon">⚽</span> ¡EL MUNDIAL EMPIEZA EN!
+            </div>
+            <div class="countdown-grid">
+                <div class="countdown-item">
+                    <span class="countdown-number" id="cd-days">00</span>
+                    <span class="countdown-label">DÍAS</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="cd-hours">00</span>
+                    <span class="countdown-label">HORAS</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="cd-mins">00</span>
+                    <span class="countdown-label">MIN</span>
+                </div>
+                <div class="countdown-item">
+                    <span class="countdown-number" id="cd-secs">00</span>
+                    <span class="countdown-label">SEG</span>
+                </div>
+            </div>
+            <div class="countdown-footer" id="cd-match-info">
+                🇲🇽 México vs Sudáfrica 🇿🇦 - Grupo A
+            </div>
+        </div>
     </header>
 
     <!-- Sección de Mascotas -->
@@ -1897,12 +2030,56 @@
             }
         }
 
+        // Temporizador Mundialista
+        function startCountdownTimer() {
+            // El primer partido (México vs Sudáfrica) es el 11 de junio de 2026 a las 14:00 (hora local, GMT-5)
+            // En Javascript, el mes 5 es Junio (0-indexado)
+            const targetDate = new Date(2026, 5, 11, 14, 0, 0);
+
+            function updateTimer() {
+                const now = new Date();
+                const diff = targetDate - now;
+
+                const daysEl = document.getElementById('cd-days');
+                const hoursEl = document.getElementById('cd-hours');
+                const minsEl = document.getElementById('cd-mins');
+                const secsEl = document.getElementById('cd-secs');
+                const titleEl = document.getElementById('countdown-timer-title');
+
+                if (diff <= 0) {
+                    if (daysEl) daysEl.innerText = "00";
+                    if (hoursEl) hoursEl.innerText = "00";
+                    if (minsEl) minsEl.innerText = "00";
+                    if (secsEl) secsEl.innerText = "00";
+                    if (titleEl) {
+                        titleEl.innerHTML = '<span class="soccer-icon">⚽</span> ¡EL MUNDIAL DE LA FIFA HA COMENZADO!';
+                    }
+                    clearInterval(timerInterval);
+                    return;
+                }
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                if (daysEl) daysEl.innerText = padZero(days);
+                if (hoursEl) hoursEl.innerText = padZero(hours);
+                if (minsEl) minsEl.innerText = padZero(mins);
+                if (secsEl) secsEl.innerText = padZero(secs);
+            }
+
+            updateTimer();
+            const timerInterval = setInterval(updateTimer, 1000);
+        }
+
         // Carga inicial
         window.addEventListener('DOMContentLoaded', () => {
             initFixture();
             loadSavedData();
             renderFixture();
             loadRealResults();
+            startCountdownTimer();
             
             // Transformar la nueva imagen del logo de BIASS en un PNG transparente al vuelo
             // Esto elimina el fondo gris pálido (#f4f4f4) que viene en el nuevo archivo JPG
