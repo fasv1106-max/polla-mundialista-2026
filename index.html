@@ -594,9 +594,19 @@
             font-size: 1.2rem;
             font-weight: 800;
             margin-bottom: 8px;
-            background: linear-gradient(to right, #ffffff, var(--color-neon-green));
+            background: linear-gradient(to right, var(--color-biass-blue), var(--color-purple));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+
+        .inline-flag-img {
+            width: 22px;
+            height: auto;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+            vertical-align: middle;
+            margin: 0 2px;
+            display: inline-block;
         }
 
         .mascots-text p {
@@ -1381,7 +1391,7 @@
                 </div>
             </div>
             <div class="countdown-footer" id="cd-match-info">
-                🇲🇽 México vs Sudáfrica 🇿🇦 - Grupo A
+                <img src="https://flagcdn.com/w20/mx.png" alt="México" class="inline-flag-img"> México vs Sudáfrica <img src="https://flagcdn.com/w20/za.png" alt="Sudáfrica" class="inline-flag-img"> - Grupo A
             </div>
         </div>
     </header>
@@ -1390,7 +1400,13 @@
     <section class="mascots-section" id="mascots-promo">
         <div class="mascots-content">
             <div class="mascots-text">
-                <h2>¡Te acompañan Maple, Zayu y Clutch! <span class="emoji-flags">🇨🇦🇲🇽🇺🇸</span></h2>
+                <h2>¡Te acompañan Maple, Zayu y Clutch! 
+                    <span class="flag-wrapper" style="display: inline-flex; align-items: center; gap: 4px; vertical-align: middle; margin-left: 5px;">
+                        <img src="https://flagcdn.com/w20/ca.png" alt="Canadá" class="inline-flag-img">
+                        <img src="https://flagcdn.com/w20/mx.png" alt="México" class="inline-flag-img">
+                        <img src="https://flagcdn.com/w20/us.png" alt="USA" class="inline-flag-img">
+                    </span>
+                </h2>
                 <p>Las mascotas oficiales del Mundial 2026 están aquí para llenar tu polla de energía. ¡Demuestra tus conocimientos futbolísticos y compite!</p>
                 <button class="mascots-btn" id="mascots-view-btn" onclick="toggleMascotsDetails()">Ver Perfiles 📖</button>
             </div>
@@ -1400,15 +1416,15 @@
         </div>
         <div class="mascots-details" id="mascots-details-panel">
             <div class="mascot-card">
-                <div class="mascot-badge canada">🇨🇦 Maple</div>
+                <div class="mascot-badge canada" style="display: inline-flex; align-items: center; gap: 6px;"><img src="https://flagcdn.com/w20/ca.png" alt="Canadá" class="inline-flag-img"> Maple</div>
                 <p>Un alce alegre al que le fascina el arte urbano. Juega de guardameta y representa la cultura y música de Canadá.</p>
             </div>
             <div class="mascot-card">
-                <div class="mascot-badge mexico">🇲🇽 Zayu</div>
+                <div class="mascot-badge mexico" style="display: inline-flex; align-items: center; gap: 6px;"><img src="https://flagcdn.com/w20/mx.png" alt="México" class="inline-flag-img"> Zayu</div>
                 <p>Un jaguar entusiasta cuyo nombre invoca la unión. Delantero estrella que ama el baile y la gastronomía de México.</p>
             </div>
             <div class="mascot-card">
-                <div class="mascot-badge usa">🇺🇸 Clutch</div>
+                <div class="mascot-badge usa" style="display: inline-flex; align-items: center; gap: 6px;"><img src="https://flagcdn.com/w20/us.png" alt="USA" class="inline-flag-img"> Clutch</div>
                 <p>Un águila calva llena de optimismo y pasión. Centrocampista táctico que representa el espíritu de aventura de EE.UU.</p>
             </div>
         </div>
