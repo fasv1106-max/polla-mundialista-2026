@@ -226,12 +226,12 @@
 
         .ranking-modal-card {
             background-color: rgba(255, 255, 255, 0.95);
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,35 64.25,45.35 58.8,62.15 41.2,62.15 35.75,45.35' fill='rgba(11,45,109,0.06)' stroke='rgba(11,45,109,0.2)' stroke-width='2' /%3E%3Cline x1='50' y1='35' x2='50' y2='5' stroke='rgba(11,45,109,0.2)' stroke-width='2' /%3E%3Cline x1='64.25' y1='45.35' x2='90' y2='37' stroke='rgba(11,45,109,0.2)' stroke-width='2' /%3E%3Cline x1='58.8' y1='62.15' x2='75' y2='90' stroke='rgba(11,45,109,0.2)' stroke-width='2' /%3E%3Cline x1='41.2' y1='62.15' x2='25' y2='90' stroke='rgba(11,45,109,0.2)' stroke-width='2' /%3E%3Cline x1='35.75' y1='45.35' x2='10' y2='37' stroke='rgba(11,45,109,0.2)' stroke-width='2' /%3E%3Cpath d='M50 5 L78 15 L90 37 M90 37 L95 62 L75 90 M75 90 L50 95 L25 90 M25 90 L5 62 L10 37 M10 37 L22 15 L50 5' fill='none' stroke='rgba(11,45,109,0.2)' stroke-width='2' /%3E%3C/svg%3E"), radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.95) 40%, rgba(240, 245, 255, 0.95) 100%);
+            background-image: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.75) 40%, rgba(219, 234, 254, 0.85) 100%), url('pelota_azul.png');
             background-size: cover;
             background-position: center;
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 2px solid rgba(11, 45, 109, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 3px solid rgba(37, 99, 235, 0.45);
             border-radius: 50%; /* Balón circular */
             padding: 55px 40px 45px 40px;
             width: 520px;
@@ -240,7 +240,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            box-shadow: 0 20px 50px rgba(11, 45, 109, 0.3), inset 0 0 40px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 25px 60px rgba(11, 45, 109, 0.35), inset 0 0 50px rgba(37, 99, 235, 0.15);
             position: relative;
             animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             color: var(--color-biass-blue);
