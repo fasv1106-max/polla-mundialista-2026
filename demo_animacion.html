@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo de Animación de Mascotas - Polla Mundialista 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-biass-blue: #0b2d6d;
+            --color-light-blue: #2563eb;
+            --color-grass: #10b981;
+            --color-grass-dark: #047857;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 5px;
+            background: linear-gradient(135deg, #3b82f6, #60a5fa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        p.desc {
+            color: #94a3b8;
+            margin-bottom: 25px;
+            font-size: 1.1rem;
+        }
+
+        /* El Campo de Fútbol (Escenario) */
+        .stage {
+            position: relative;
+            width: 100%;
+            height: 380px;
+            background: linear-gradient(to bottom, #0f766e 0%, #047857 100%);
+            border-radius: 24px;
+            border: 4px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 0 80px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        /* Líneas del campo */
+        .field-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(90deg, rgba(255, 255, 255, 0.08) 50%, transparent 50%),
+                radial-gradient(circle at center, transparent 40%, rgba(255, 255, 255, 0.08) 40%, rgba(255, 255, 255, 0.08) 42%, transparent 42%);
+            background-size: 100px 100%, 100% 100%;
+            pointer-events: none;
+        }
+
+        .center-circle {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 120px;
+            height: 120px;
+            border: 2px dashed rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+        }
+
+        .goal-post {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-55%);
+            width: 30px;
+            height: 160px;
+            border: 3px solid rgba(255, 255, 255, 0.35);
+            pointer-events: none;
+        }
+
+        .goal-left {
+            left: -10px;
+            border-left: none;
+            border-radius: 0 15px 15px 0;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .goal-right {
+            right: -10px;
+            border-right: none;
+            border-radius: 15px 0 0 15px;
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Personaje de la Mascota */
+        .character-container {
+            position: absolute;
+            bottom: 60px;
+            left: -150px; /* Inicia fuera de la pantalla */
+            width: 130px;
+            height: 130px;
+            transform-origin: bottom center;
+            transition: left 0.1s linear; /* Movido dinámicamente con JS */
+            z-index: 10;
+        }
+
+        .mascot-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        /* Sombra dinámica del personaje */
+        .mascot-shadow {
+            position: absolute;
+            bottom: -5px;
+            left: 15%;
+            width: 70%;
+            height: 10px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50%;
+            filter: blur(2px);
+            z-index: 5;
+            transition: transform 0.2s, opacity 0.2s;
+        }
+
+        /* --- CLASES DE ANIMACIÓN --- */
+
+        /* 1. Rebote de correr (Bobbing) */
+        .anim-run {
+            animation: mascotBob 0.6s infinite ease-in-out;
+        }
+
+        @keyframes mascotBob {
+            0%, 100% {
+                transform: translateY(0) rotate(2deg);
+            }
+            50% {
+                transform: translateY(-12px) rotate(-2deg);
+            }
+        }
+
+        /* 2. Saltar / Celebrar */
+        .anim-jump {
+            animation: mascotJump 0.8s ease-out;
+        }
+
+        @keyframes mascotJump {
+            0% {
+                transform: translateY(0) scaleY(1);
+            }
+            20% {
+                transform: translateY(5px) scaleY(0.85); /* Se encoge antes de saltar */
+            }
+            50% {
+                transform: translateY(-75px) scaleY(1.05) rotate(15deg); /* Punto más alto */
+            }
+            75% {
+                transform: translateY(0) scaleY(0.95); /* Aterriza y amortigua */
+            }
+            100% {
+                transform: translateY(0) scaleY(1);
+            }
+        }
+
+        /* Partículas de polvo al correr */
+        .dust-particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: fadeDust 0.6s forwards ease-out;
+            z-index: 4;
+        }
+
+        @keyframes fadeDust {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translate(-40px, -20px) scale(0.2);
+                opacity: 0;
+            }
+        }
+
+        /* Botón de Celebración (Cartelera) */
+        .goal-sign {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            padding: 12px 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+            font-size: 2rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            z-index: 20;
+            opacity: 0;
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+        }
+
+        .goal-sign.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        /* Panel de Control */
+        .control-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--color-light-blue) 0%, #1d4ed8 100%);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(37, 99, 235, 0.5);
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-gold {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+        }
+
+        .btn-gold:hover {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            box-shadow: 0 6px 16px rgba(245, 158, 11, 0.5);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            box-shadow: none;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: none;
+        }
+
+        /* Selector de Velocidad */
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(15, 23, 42, 0.4);
+            padding: 5px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        label {
+            font-size: 0.9rem;
+            color: #94a3b8;
+            font-weight: 600;
+        }
+
+        select {
+            background: #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: white;
+            padding: 8px 12px;
+            font-size: 0.95rem;
+            border-radius: 8px;
+            outline: none;
+            cursor: pointer;
+        }
+
+        .nav-back {
+            margin-top: 25px;
+            font-size: 0.95rem;
+        }
+
+        .nav-back a {
+            color: #3b82f6;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+
+        .nav-back a:hover {
+            color: #60a5fa;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Animación de Mascotas</h1>
+        <p class="desc">Haz clic en los controles de abajo para ver a la mascota correr, saltar y celebrar en tiempo real.</p>
+
+        <!-- El Campo de Juego -->
+        <div class="stage" id="game-stage">
+            <div class="field-lines"></div>
+            <div class="center-circle"></div>
+            <div class="goal-post goal-left"></div>
+            <div class="goal-post goal-right"></div>
+
+            <!-- Cartelera GOAL! -->
+            <div class="goal-sign" id="goal-sign">¡GOOOL MUNDIALISTA! ⚽🔥</div>
+
+            <!-- Contenedor del Personaje -->
+            <div class="character-container" id="character">
+                <div class="mascot-shadow" id="shadow"></div>
+                <img src="zayu_corriendo.png" alt="Zayu corriendo" class="mascot-img anim-run" id="mascot-element">
+            </div>
+        </div>
+
+        <!-- Panel de Control -->
+        <div class="control-panel">
+            <button class="btn" id="btn-run-across" onclick="runAcross()">
+                🏃‍♂️ Correr todo el Campo
+            </button>
+            <button class="btn btn-gold" id="btn-jump" onclick="triggerJump()">
+                ✨ Saltar / Celebrar
+            </button>
+            <button class="btn btn-danger" id="btn-goal" onclick="triggerGoalCelebration()">
+                ⚽ ¡Goooool!
+            </button>
+            <button class="btn btn-secondary" id="btn-reset" onclick="resetPosition()">
+                🔄 Reiniciar Posición
+            </button>
+
+            <div class="speed-control">
+                <label for="speed-select">Velocidad:</label>
+                <select id="speed-select" onchange="updateSpeed()">
+                    <option value="4">Lento</option>
+                    <option value="8" selected>Normal</option>
+                    <option value="15">Rápido</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="nav-back">
+            <a href="index.html">← Volver al Fixture de la Copa Mundial</a>
+        </div>
+    </div>
+
+    <!-- Confetti Library para la celebración de gol -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        const character = document.getElementById('character');
+        const mascotElement = document.getElementById('mascot-element');
+        const shadow = document.getElementById('shadow');
+        const goalSign = document.getElementById('goal-sign');
+        const stage = document.getElementById('game-stage');
+
+        let isRunning = false;
+        let isJumping = false;
+        let positionX = -150; // Posición inicial (fuera de la pantalla)
+        let animationFrameId = null;
+        let speed = 8; // Píxeles por frame
+        let isFlipped = false; // Dirección de mirada
+        let dustInterval = null;
+
+        // Establecer posición inicial en el centro del escenario al cargar
+        window.addEventListener('DOMContentLoaded', () => {
+            positionX = (stage.clientWidth / 2) - 65; // centrado
+            character.style.left = positionX + 'px';
+            character.style.transform = 'scaleX(1)';
+        });
+
+        // Actualizar velocidad basada en el selector
+        function updateSpeed() {
+            speed = parseInt(document.getElementById('speed-select').value);
+            // Ajustar la velocidad del bobbing de animación CSS según la velocidad de carrera
+            if (speed === 4) {
+                mascotElement.style.animationDuration = '0.9s';
+            } else if (speed === 8) {
+                mascotElement.style.animationDuration = '0.6s';
+            } else {
+                mascotElement.style.animationDuration = '0.35s';
+            }
+        }
+
+        // Generar partículas de polvo detrás del personaje al correr
+        function spawnDust() {
+            if (isJumping) return;
+            const dust = document.createElement('div');
+            dust.className = 'dust-particle';
+            
+            // Posicionar justo detrás del pie
+            const stageRect = stage.getBoundingClientRect();
+            const charRect = character.getBoundingClientRect();
+            
+            const xOffset = isFlipped ? 80 : 20; // Depende de la orientación
+            const left = charRect.left - stageRect.left + xOffset;
+            const top = charRect.bottom - stageRect.top - 15;
+            
+            dust.style.left = left + 'px';
+            dust.style.top = top + 'px';
+            
+            // Tamaño aleatorio
+            const size = Math.random() * 12 + 6;
+            dust.style.width = size + 'px';
+            dust.style.height = size + 'px';
+            
+            stage.appendChild(dust);
+            
+            // Eliminar elemento después de la animación
+            setTimeout(() => {
+                dust.remove();
+            }, 600);
+        }
+
+        // Iniciar ráfaga de polvo
+        function startDust() {
+            if (!dustInterval) {
+                dustInterval = setInterval(spawnDust, 80);
+            }
+        }
+
+        // Detener ráfaga de polvo
+        function stopDust() {
+            if (dustInterval) {
+                clearInterval(dustInterval);
+                dustInterval = null;
+            }
+        }
+
+        // Correr a través de toda la pantalla
+        function runAcross() {
+            if (isRunning) return;
+            isRunning = true;
+            
+            // Reiniciar personaje a la izquierda
+            positionX = -130;
+            character.style.left = positionX + 'px';
+            
+            // Orientar hacia la derecha (sin espejo)
+            isFlipped = false;
+            character.style.transform = 'scaleX(1)';
+            
+            // Activar clase de correr
+            mascotElement.className = 'mascot-img anim-run';
+            updateSpeed();
+            startDust();
+
+            const stageWidth = stage.clientWidth;
+
+            function animateRun() {
+                if (positionX < stageWidth + 50) {
+                    positionX += speed;
+                    character.style.left = positionX + 'px';
+                    animationFrameId = requestAnimationFrame(animateRun);
+                } else {
+                    // Terminó la carrera
+                    stopDust();
+                    isRunning = false;
+                    // Devolver al centro mirando a la izquierda de forma amigable
+                    setTimeout(() => {
+                        positionX = stageWidth / 2 - 65;
+                        character.style.left = positionX + 'px';
+                        isFlipped = true;
+                        character.style.transform = 'scaleX(-1)';
+                        mascotElement.className = 'mascot-img';
+                    }, 500);
+                }
+            }
+
+            animateRun();
+        }
+
+        // Trigger de Salto / Celebración
+        function triggerJump() {
+            if (isJumping || isRunning) return;
+            isJumping = true;
+            
+            // Detener animación de correr y aplicar animación de salto
+            mascotElement.className = 'mascot-img anim-jump';
+            
+            // Animación de escala de sombra sincronizada
+            shadow.style.transform = 'scale(0.4)';
+            shadow.style.opacity = '0.25';
+
+            setTimeout(() => {
+                isJumping = false;
+                mascotElement.className = 'mascot-img';
+                shadow.style.transform = 'scale(1)';
+                shadow.style.opacity = '1';
+                
+                // Pequeño estallido de confeti individual al caer
+                confetti({
+                    particleCount: 25,
+                    spread: 40,
+                    origin: { 
+                        x: (character.getBoundingClientRect().left + 65) / window.innerWidth,
+                        y: (character.getBoundingClientRect().bottom) / window.innerHeight
+                    }
+                });
+            }, 800);
+        }
+
+        // Celebración de ¡Gol!
+        function triggerGoalCelebration() {
+            if (isRunning) return;
+            
+            // Mostrar letrero de Gol
+            goalSign.classList.add('show');
+            
+            // Hacer que la mascota salte repetidamente
+            triggerJump();
+            setTimeout(triggerJump, 900);
+            
+            // Disparar confeti masivo
+            var duration = 2.5 * 1000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+
+            // Ocultar letrero después de 3 segundos
+            setTimeout(() => {
+                goalSign.classList.remove('show');
+            }, 3000);
+        }
+
+        // Reiniciar posición
+        function resetPosition() {
+            cancelAnimationFrame(animationFrameId);
+            stopDust();
+            isRunning = false;
+            isJumping = false;
+            isFlipped = false;
+            
+            positionX = (stage.clientWidth / 2) - 65;
+            character.style.left = positionX + 'px';
+            character.style.transform = 'scaleX(1)';
+            
+            mascotElement.className = 'mascot-img';
+            shadow.style.transform = 'scale(1)';
+            shadow.style.opacity = '1';
+            goalSign.classList.remove('show');
+        }
+    </script>
+</body>
+</html>
