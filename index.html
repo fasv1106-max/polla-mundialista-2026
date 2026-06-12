@@ -301,6 +301,208 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Modal de Premios */
+        .prizes-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 45, 109, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            padding: 20px;
+            box-sizing: border-box;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .prizes-modal-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            border-radius: 24px;
+            padding: 30px;
+            max-width: 420px;
+            width: 100%;
+            box-shadow: 0 20px 50px rgba(11, 45, 109, 0.3);
+            position: relative;
+            text-align: center;
+            animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            color: var(--color-biass-blue);
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: rgba(11, 45, 109, 0.05);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            color: var(--color-biass-blue);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .close-modal-btn:hover {
+            background: rgba(11, 45, 109, 0.1);
+            transform: scale(1.1);
+        }
+
+        .trophy-container {
+            font-size: 4.5rem;
+            margin-bottom: 10px;
+            animation: float-trophy 3s ease-in-out infinite;
+            display: inline-block;
+        }
+
+        .prize-pool-badge {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            border-radius: 16px;
+            padding: 12px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .prize-pool-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            color: #553c00;
+        }
+
+        .prize-pool-amount {
+            font-family: var(--font-title);
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #3a2800;
+            text-shadow: 0 1px 2px rgba(255, 255, 255, 0.4);
+        }
+
+        .prizes-breakdown {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .prize-item {
+            background: rgba(11, 45, 109, 0.04);
+            border: 1px solid rgba(11, 45, 109, 0.08);
+            border-radius: 14px;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: transform 0.2s ease;
+        }
+
+        .prize-item:hover {
+            transform: scale(1.02);
+            background: rgba(11, 45, 109, 0.07);
+        }
+
+        .prize-rank {
+            font-weight: 700;
+            font-size: 0.95rem;
+        }
+
+        .prize-value {
+            font-family: var(--font-title);
+            font-weight: 800;
+            font-size: 1.1rem;
+        }
+
+        .gold-prize {
+            border-left: 5px solid #ffd700;
+        }
+        .silver-prize {
+            border-left: 5px solid #c0c0c0;
+        }
+        .bronze-prize {
+            border-left: 5px solid #cd7f32;
+        }
+
+        .prizes-note {
+            font-size: 0.75rem;
+            color: rgba(11, 45, 109, 0.6);
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        /* Botón flotante para ver premios */
+        .floating-prizes-btn {
+            position: fixed;
+            bottom: 95px; /* Por encima del panel inferior que mide unos 80px */
+            right: 20px;
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: #3a2800;
+            border: 1px solid rgba(255, 215, 0, 0.5);
+            border-radius: 50px;
+            padding: 10px 18px;
+            font-family: var(--font-title);
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 215, 0, 0.3);
+            z-index: 999;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: bounce-btn 3s infinite;
+        }
+
+        .floating-prizes-btn:hover {
+            transform: scale(1.06) translateY(-2px);
+            box-shadow: 0 10px 25px rgba(255, 215, 0, 0.5);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes float-trophy {
+            0% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-8px) rotate(3deg); }
+            100% { transform: translateY(0) rotate(0); }
+        }
+
+        @keyframes bounce-btn {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-6px); }
+            60% { transform: translateY(-3px); }
+        }
+
+        @media (max-width: 768px) {
+            .floating-prizes-btn {
+                bottom: 155px;
+                right: 15px;
+                padding: 8px 14px;
+                font-size: 0.8rem;
+            }
+        }
+
         h1 {
             font-family: var(--font-title);
             font-size: 2.2rem;
@@ -1246,6 +1448,11 @@
         <!-- Renderizado dinámico por JS -->
     </main>
 
+    <!-- Botón Flotante de Premios -->
+    <button class="floating-prizes-btn" onclick="openPrizesModal()">
+        <span>🏆</span> Premios
+    </button>
+
     <!-- Panel Flotante Inferior -->
     <div class="bottom-panel">
         <div class="bottom-panel-content">
@@ -1256,6 +1463,36 @@
             <button class="submit-btn" id="submit-button" onclick="submitPredictions()">
                 <span>Enviar a la Nube ☁️</span>
             </button>
+        </div>
+    </div>
+
+    <!-- Modal de Premios -->
+    <div class="prizes-modal-overlay" id="prizes-modal" style="display: none;">
+        <div class="prizes-modal-card">
+            <button class="close-modal-btn" onclick="closePrizesModal()">✖</button>
+            <div class="trophy-container">
+                <span class="gold-trophy-icon">🏆</span>
+            </div>
+            <h2 class="modal-title" style="margin-top: 0; font-family: var(--font-title); font-weight: 800; font-size: 1.5rem; text-transform: uppercase;">Premios de la Polla</h2>
+            <div class="prize-pool-badge">
+                <span class="prize-pool-label">POZO ACUMULADO</span>
+                <span class="prize-pool-amount">S/ 1,060</span>
+            </div>
+            <div class="prizes-breakdown">
+                <div class="prize-item gold-prize">
+                    <span class="prize-rank">🥇 1er Puesto (50%)</span>
+                    <span class="prize-value">S/ 530</span>
+                </div>
+                <div class="prize-item silver-prize">
+                    <span class="prize-rank">🥈 2do Puesto (30%)</span>
+                    <span class="prize-value">S/ 318</span>
+                </div>
+                <div class="prize-item bronze-prize">
+                    <span class="prize-rank">🥉 3er Puesto (20%)</span>
+                    <span class="prize-value">S/ 212</span>
+                </div>
+            </div>
+            <p class="prizes-note">* El pozo acumulado podría aumentar a medida que ingresen más participantes.</p>
         </div>
     </div>
 
@@ -2180,6 +2417,17 @@
                 content.style.display = 'none';
                 arrow.innerText = '▼';
             }
+        }
+
+        // Alternar visualización del modal de premios
+        function openPrizesModal() {
+            document.getElementById('prizes-modal').style.display = 'flex';
+            document.body.style.overflow = 'hidden'; // Evita scroll del fondo
+        }
+
+        function closePrizesModal() {
+            document.getElementById('prizes-modal').style.display = 'none';
+            document.body.style.overflow = 'auto'; // Restaura scroll del fondo
         }
 
         // Carga inicial
