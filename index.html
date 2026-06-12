@@ -1534,6 +1534,8 @@
             }
         }
     </style>
+    <!-- Biblioteca de Confeti para celebraciones -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body>
 
@@ -2560,6 +2562,16 @@
             document.getElementById('ranking-modal').style.display = 'flex';
             document.body.style.overflow = 'hidden'; // Evita scroll del fondo
             fetchRankingData();
+
+            // Disparar confeti con los colores de la polla y dorado
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 },
+                    colors: ['#ffd700', '#ffa500', '#0b2d6d', '#4f46e5', '#db2777']
+                });
+            }
         }
 
         function closeRankingModal() {
