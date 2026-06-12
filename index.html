@@ -1511,6 +1511,8 @@
 
         // Evaluar el candado y apertura sucesiva de una fase específica
         function getPhaseStatus(phaseId, currentTime) {
+            return { isLocked: false, isClosed: false, reason: '⚡ Activo' };
+
             let lookupId = phaseId;
             if (phaseId === 'final') lookupId = 'final';
 
