@@ -2010,6 +2010,7 @@
             }
 
             // 2. Validar Bloqueo por Expiración (1 minuto antes de su primer partido)
+            // La fase completa se considera bloqueada solo si TODOS sus partidos individuales están bloqueados por tiempo.
             let searchStart = config.start;
             let searchEnd = config.end;
             if (phaseId === 'final') {
@@ -2018,10 +2019,12 @@
 
             const phaseMatches = matches.filter(m => m.id >= searchStart && m.id <= searchEnd);
             if (phaseMatches.length > 0) {
-                const firstMatch = phaseMatches.reduce((min, m) => m.date < min.date ? m : min, phaseMatches[0]);
-                const lockTime = new Date(firstMatch.date.getTime() - 60 * 1000); // 1 minuto antes
+                const allLocked = phaseMatches.every(m => {
+                    const lockTime = new Date(m.date.getTime() - 60 * 1000);
+                    return currentTime >= lockTime;
+                });
 
-                if (currentTime >= lockTime) {
+                if (allLocked) {
                     return {
                         isLocked: true,
                         isClosed: false,
@@ -2031,6 +2034,28 @@
             }
 
             return { isLocked: false, isClosed: false, reason: '⚡ Activo' };
+        }
+
+        // Evaluar el candado de un partido individual
+        function getMatchStatus(match, currentTime) {
+            // 1. Si la fase completa está cerrada esperando a la previa, está bloqueado
+            const phaseStatus = getPhaseStatus(match.phase, currentTime);
+            if (phaseStatus.isClosed) {
+                return { isLocked: true, reason: phaseStatus.reason };
+            }
+
+            // 2. Si el partido ya tiene resultado real oficial, está bloqueado
+            if (match.realHome !== null && match.realAway !== null) {
+                return { isLocked: true, reason: '🔒 Bloqueado (Resultado oficial)' };
+            }
+
+            // 3. Si ya pasó su tiempo de bloqueo individual (1 minuto antes de su inicio)
+            const lockTime = new Date(match.date.getTime() - 60 * 1000);
+            if (currentTime >= lockTime) {
+                return { isLocked: true, reason: '🔒 Bloqueado (Partido iniciado)' };
+            }
+
+            return { isLocked: false, reason: '⚡ Activo' };
         }
 
         // Eliminar el fondo claro del logo de BIASS en tiempo de ejecución (Canvas manipulation)
@@ -2079,8 +2104,8 @@
             const match = matches.find(m => m.id === matchId);
             if (match) {
                 const currentTime = getCurrentTime();
-                const statusInfo = getPhaseStatus(match.phase, currentTime);
-                if (statusInfo.isLocked || (match.realHome !== null && match.realAway !== null)) {
+                const statusInfo = getMatchStatus(match, currentTime);
+                if (statusInfo.isLocked) {
                     const inputEl = document.getElementById(`score-${type}-${matchId}`);
                     if (inputEl) {
                         const savedPred = userPredictions[`P_${matchId}`] ? userPredictions[`P_${matchId}`][type] : '';
@@ -2242,8 +2267,9 @@
                 grid.className = 'matches-grid';
 
                 phaseMatches.forEach(match => {
+                    const matchStatus = getMatchStatus(match, currentTime);
                     const card = document.createElement('div');
-                    card.className = `match-card ${statusInfo.isLocked ? 'locked-card' : ''}`;
+                    card.className = `match-card ${matchStatus.isLocked ? 'locked-card' : ''}`;
 
                     const prediction = userPredictions[`P_${match.id}`] || { home: '', away: '' };
 
@@ -2255,14 +2281,12 @@
                         ? `<img src="https://flagcdn.com/w40/${match.teamAwayFlag}.png" alt="Bandera" class="flag-img" loading="lazy" onerror="if(this.parentNode){this.parentNode.innerHTML='⚽'}">`
                         : `<div class="flag-placeholder">🏆</div>`;
 
-                    let matchBadgeText = '⚡ Activo';
+                    let matchBadgeText = matchStatus.reason;
                     let matchBadgeClass = 'open';
-                    if (statusInfo.isLocked) {
-                        if (statusInfo.isClosed) {
-                            matchBadgeText = '🔒 En espera';
+                    if (matchStatus.isLocked) {
+                        if (matchStatus.reason.includes('espera') || matchStatus.reason.includes('Espera')) {
                             matchBadgeClass = 'waiting';
                         } else {
-                            matchBadgeText = '🔒 Bloqueado';
                             matchBadgeClass = 'locked';
                         }
                     }
@@ -2291,7 +2315,7 @@
                                         value="${prediction.home}" 
                                         placeholder="-"
                                         oninput="handleScoreChange(${match.id}, 'home', this.value)"
-                                        ${(statusInfo.isLocked || (match.realHome !== null && match.realAway !== null)) ? 'disabled' : ''}>
+                                        ${matchStatus.isLocked ? 'disabled' : ''}>
                                     
                                     <span class="score-divider">-</span>
                                     
@@ -2301,7 +2325,7 @@
                                         value="${prediction.away}" 
                                         placeholder="-"
                                         oninput="handleScoreChange(${match.id}, 'away', this.value)"
-                                        ${(statusInfo.isLocked || (match.realHome !== null && match.realAway !== null)) ? 'disabled' : ''}>
+                                        ${matchStatus.isLocked ? 'disabled' : ''}>
                                 </div>
                                 ${match.realHome !== null && match.realAway !== null ? `
                                     <div class="real-score-label">
@@ -2345,7 +2369,7 @@
                 const pred = userPredictions[`P_${match.id}`];
                 if (pred && pred.home !== '' && pred.away !== '') {
                     const currentTime = getCurrentTime();
-                    const statusInfo = getPhaseStatus(match.phase, currentTime);
+                    const statusInfo = getMatchStatus(match, currentTime);
                     if (!statusInfo.isLocked) {
                         resultadosValidos[`P_${match.id}`] = `${pred.home}-${pred.away}`;
                         totalCompletados++;
