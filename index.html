@@ -1574,6 +1574,97 @@
                 gap: 5px;
             }
         }
+
+        /* Botón Importar/Recuperar de la nube */
+        .import-btn {
+            background: rgba(11, 45, 109, 0.08);
+            border: 1.5px solid var(--color-purple);
+            border-radius: 12px;
+            padding: 10px 16px;
+            color: var(--color-biass-blue);
+            font-family: var(--font-title);
+            font-size: 0.85rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+
+        .import-btn:hover {
+            background: rgba(11, 45, 109, 0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(11, 45, 109, 0.15);
+        }
+
+        .import-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Blocker de Página */
+        .page-blocker-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(11, 45, 109, 0.55);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 3000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .page-blocker-card {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 20px 50px rgba(11, 45, 109, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            max-width: 90%;
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-blocker-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(79, 70, 229, 0.1);
+            border-top: 5px solid var(--color-purple);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .page-blocker-text {
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: var(--color-biass-blue);
+            margin: 0;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Ocultar el texto en pantallas pequeñas para no apretar el panel */
+        @media (max-width: 600px) {
+            .import-btn-text {
+                display: none;
+            }
+            .import-btn {
+                padding: 10px 12px;
+            }
+        }
     </style>
     <!-- Biblioteca de Confeti para celebraciones -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -1680,6 +1771,9 @@
             <div class="user-info-wrapper">
                 <label for="username" class="user-label">Participante:</label>
                 <input type="text" id="username" class="user-input" placeholder="Ingresa tu Nombre y Apellido" required oninput="saveUsername()">
+                <button class="import-btn" type="button" onclick="recoverPredictionsFromCloud()" title="Recuperar mis pronósticos de la nube">
+                    <span>📥</span> <span class="import-btn-text">Recuperar</span>
+                </button>
             </div>
             <button class="submit-btn" id="submit-button" onclick="submitPredictions()">
                 <span>Enviar a la Nube ☁️</span>
@@ -1714,6 +1808,14 @@
                 </div>
             </div>
             <p class="prizes-note">* El pozo acumulado podría aumentar a medida que ingresen más participantes.</p>
+        </div>
+    </div>
+
+    <!-- Bloqueador de Página para Consultas en la Nube -->
+    <div class="page-blocker-overlay" id="page-blocker" style="display: none;">
+        <div class="page-blocker-card">
+            <div class="page-blocker-spinner"></div>
+            <p class="page-blocker-text">Buscando tus pronósticos en la nube... ⏳</p>
         </div>
     </div>
 
@@ -2349,6 +2451,51 @@
                 section.appendChild(grid);
                 container.appendChild(section);
             });
+        }
+
+        // Recuperar predicciones desde la nube
+        function recoverPredictionsFromCloud() {
+            const username = document.getElementById('username').value.trim();
+            if (!username) {
+                alert('⚠️ Por favor, ingresa tu Nombre y Apellido para buscar tus pronósticos.');
+                document.getElementById('username').focus();
+                return;
+            }
+
+            if (Object.keys(userPredictions).length > 0) {
+                if (!confirm('⚠️ Esta acción reemplazará los marcadores actuales en pantalla por tus pronósticos guardados en la nube. ¿Deseas continuar?')) {
+                    return;
+                }
+            }
+
+            const blocker = document.getElementById('page-blocker');
+            blocker.style.display = 'flex';
+
+            fetch(WEB_APP_URL + '?action=getUserPredictions&nombre=' + encodeURIComponent(username))
+                .then(response => response.json())
+                .then(data => {
+                    blocker.style.display = 'none';
+                    if (data && data.success && data.found) {
+                        const importedPredictions = data.predictions || {};
+                        
+                        // Guardar en la variable local y local storage
+                        userPredictions = importedPredictions;
+                        localStorage.setItem('biass_predictions', JSON.stringify(userPredictions));
+                        localStorage.setItem('biass_username', username);
+                        
+                        // Renderizar de nuevo el fixture
+                        renderFixture();
+                        
+                        alert(`🎉 ¡Excelente! Se recuperaron con éxito los pronósticos de ${data.nombre || username}.`);
+                    } else {
+                        alert(`⚠️ No se encontraron pronósticos enviados para '${username}'. Asegúrate de escribir tu nombre exactamente igual a como lo registraste en tus envíos previos.`);
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al recuperar pronósticos:', error);
+                    blocker.style.display = 'none';
+                    alert('❌ Ocurrió un error al conectar con la nube. Por favor, intenta de nuevo.');
+                });
         }
 
         // Envío asíncrono
