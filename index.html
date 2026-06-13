@@ -1837,6 +1837,7 @@
     <script>
         // Configuración de Envío a Google Sheets
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzxESMGPIT9mBiDC0L-GevUTpZJj-HBiOgitVmkwjHHzJu23ntcSoKZ7vNnComaSlkV6w/exec";
+        const GLOBAL_LOCK = true; // Bloqueo global de todas las predicciones de la página (activar para cerrar pronósticos)
 
         // Fixture Oficial de los 72 Partidos de Grupos del Mundial 2026
         // Sincronizado al 100% con Flashscore.pe para la hora de Perú/Colombia (GMT-5)
@@ -2140,6 +2141,11 @@
 
         // Evaluar el candado de un partido individual
         function getMatchStatus(match, currentTime) {
+            // 0. Si el bloqueo global está activo, bloquear todos los partidos
+            if (typeof GLOBAL_LOCK !== 'undefined' && GLOBAL_LOCK) {
+                return { isLocked: true, reason: '🔒 Bloqueado' };
+            }
+
             // Los partidos 1, 2, 3 y 4 ya se jugaron y deben estar bloqueados siempre
             if (match.id <= 4) {
                 return { isLocked: true, reason: '🔒 Bloqueado' };
