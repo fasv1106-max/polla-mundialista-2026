@@ -2140,6 +2140,11 @@
 
         // Evaluar el candado de un partido individual
         function getMatchStatus(match, currentTime) {
+            // Los partidos 1, 2, 3 y 4 ya se jugaron y deben estar bloqueados siempre
+            if (match.id <= 4) {
+                return { isLocked: true, reason: '🔒 Bloqueado' };
+            }
+
             // 1. Si la fase completa está cerrada esperando a la previa, está bloqueado
             const phaseStatus = getPhaseStatus(match.phase, currentTime);
             if (phaseStatus.isClosed) {
